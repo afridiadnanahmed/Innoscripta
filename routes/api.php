@@ -16,5 +16,7 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::post('password/forgot', [PasswordResetController::class, 'sendResetLink']);
 Route::post('password/reset', [PasswordResetController::class, 'reset']);
 
-// NewAPI
-Route::get('fetch-news', [NewsController::class, 'fetchAndStoreNews']);
+// NewsAPI
+Route::get('fetch-news', [NewsController::class, 'fetchNewsFromNewsApi']);
+// NYT API
+Route::get('fetch-nyt-news', [NewsController::class, 'fetchNewsFromNYT']);
