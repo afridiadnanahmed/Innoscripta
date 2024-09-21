@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  innoscriptatest:
+    image: innoscriptatest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
