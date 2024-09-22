@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
+use App\Models\UserPreference;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ArticleController extends Controller
 {
@@ -83,5 +85,42 @@ class ArticleController extends Controller
         return response()->json([
             'data' => $article,
         ], 200);
+    }
+
+    /**
+     * Fetch a personalized news feed based on user preferences.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function personalizedFeed()
+    {
+        $user = Auth::user();
+        $preferences = null;
+
+        if ($user) {
+            // Fetch user preferences
+            $preferences = UserPreference::where('user_id', $user->id)->first();
+        }
+
+        $query = News::query();
+
+        // Apply user preferences if available
+        if ($preferences) {
+            if ($preferences->sources) {
+                $query->whereIn('source', $preferences->sources);
+            }
+
+            if ($preferences->categories) {
+                $query->whereIn('category', $preferences->categories);
+            }
+
+            if ($preferences->authors) {
+                $query->whereIn('author', $preferences->authors); // Ensure your Article model has an `author` field
+            }
+        }
+
+        $articles = $query->get();
+
+        return response()->json(['data' => $articles]);
     }
 }

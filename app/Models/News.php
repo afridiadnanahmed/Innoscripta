@@ -10,15 +10,9 @@ class News extends Model
     use HasFactory;
 
     // Add the fillable fields
-    protected $fillable = [
-        'title',
-        'description',
-        'url',
-        'source',
-        'published_at',
-    ];
+    protected $fillable = ['title', 'description', 'url', 'source', 'category', 'author', 'published_at'];
 
-        /**
+    /**
      * The attributes that should be cast to dates.
      *
      * @var array
