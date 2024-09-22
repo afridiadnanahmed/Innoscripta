@@ -24,13 +24,18 @@ Route::get('fetch-news', [NewsController::class, 'fetchNewsFromNewsApi']);
 Route::get('fetch-nyt-news', [NewsController::class, 'fetchNewsFromNYT']);
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/articles', [ArticleController::class, 'getPaginatedArticles']);
-    Route::get('/articles/search', [ArticleController::class, 'search']);
-    Route::get('/articles/{id}', [ArticleController::class, 'show']);
-    
-// User preferences
-    Route::post('/preferences', [UserPreferenceController::class, 'store']);
-    Route::get('/preferences', [UserPreferenceController::class, 'show']);
-    Route::get('/personalized-feed', [UserPreferenceController::class, 'personalizedFeed']);
 
+     // Apply the default rate limit (60 requests per minute) to this group
+     Route::middleware('throttle')->group(function () {
+
+        Route::get('/articles', [ArticleController::class, 'getPaginatedArticles']);
+        Route::get('/articles/search', [ArticleController::class, 'search']);
+        Route::get('/articles/{id}', [ArticleController::class, 'show']);
+
+        // User preferences
+        Route::post('/preferences', [UserPreferenceController::class, 'store']);
+        Route::get('/preferences', [UserPreferenceController::class, 'show']);
+        Route::get('/personalized-feed', [UserPreferenceController::class, 'personalizedFeed']);
+
+    }); 
 }); 
