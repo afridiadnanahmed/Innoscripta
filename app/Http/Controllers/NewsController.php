@@ -33,6 +33,7 @@ class NewsController extends Controller
                     News::updateOrCreate(
                         ['title' => $article['title']], // Unique constraint
                         [
+                            'author' => $article['author']??"",
                             'description' => $article['description']??"",
                             'url' => $article['url'],
                             'source' => $article['source']['name'],
@@ -75,6 +76,7 @@ class NewsController extends Controller
                     News::updateOrCreate(
                         ['title' => $article['title']], // Unique constraint
                         [
+                            'author' => $article['author'],
                             'description' => $article['abstract'], // Use 'abstract' for short description
                             'url' => $article['url'],
                             'source' => 'The New York Times',

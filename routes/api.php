@@ -4,6 +4,7 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\UserPreferenceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/articles', [ArticleController::class, 'getPaginatedArticles']);
     Route::get('/articles/search', [ArticleController::class, 'search']);
     Route::get('/articles/{id}', [ArticleController::class, 'show']);
+    
+// User preferences
+    Route::post('/preferences', [UserPreferenceController::class, 'store']);
+    Route::get('/preferences', [UserPreferenceController::class, 'show']);
+    Route::get('/personalized-feed', [UserPreferenceController::class, 'personalizedFeed']);
+
 }); 
