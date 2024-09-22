@@ -13,8 +13,8 @@ Route::get('/user', function (Request $request) {
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::post('password/forgot', [PasswordResetController::class, 'sendResetLink']);
-Route::post('password/reset', [PasswordResetController::class, 'reset']);
+Route::post('password/forgot', [PasswordResetController::class, 'sendResetLink'])->name('password-forgot');
+Route::post('password/reset', [PasswordResetController::class, 'resetPassword'])->name('password-reset');
 
 // NewsAPI
 Route::get('fetch-news', [NewsController::class, 'fetchNewsFromNewsApi']);
