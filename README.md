@@ -50,6 +50,39 @@ For detailed API documentation, including endpoints and usage examples, visit [S
     ```bash
     php artisan serve
 
+## Environment Configuration
+
+To ensure that the application can fetch news from the APIs, you need to set up the following environment variables in your `.env` file:
+
+- **NYT_API_KEY**: Your API key for accessing the New York Times API.
+- **NEWS_API_KEY**: Your API key for accessing the News API.
+
+### Steps to Set Up
+
+1. **Obtain API Keys:**
+   - Sign up for an API key from the [New York Times API](https://developer.nytimes.com/) and [News API](https://newsapi.org/).
+
+2. **Update the `.env` File:**
+   - Open the `.env` file located in the root of your project.
+   - Add the following lines with your respective API keys:
+
+     ```plaintext
+     NYT_API_KEY=your_nyt_api_key_here
+     NEWS_API_KEY=your_news_api_key_here
+     ```
+
+3. **Save and Close the `.env` File.**
+
+4. **Clear Configuration Cache (if applicable):**
+   - Run the following Artisan command to clear and cache your configuration:
+
+     ```bash
+     php artisan config:cache
+     ```
+
+By setting these environment variables, the application will be able to use the API keys for fetching and updating news data.
+
+
 # Contributing
 
 We welcome contributions to this project! To get started, please follow these steps:
