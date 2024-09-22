@@ -45,8 +45,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./D:/xampp/htdocs/Innoscripta-test:/var/www/html
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - D:/xampp/htdocs/Innoscripta-test:/var/www/html
     networks:
       - app-network
 
