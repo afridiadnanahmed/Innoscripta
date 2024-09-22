@@ -21,10 +21,10 @@ class NewsController extends Controller
         try {
             $apiKey = env('NEWS_API_KEY');
             $url = 'https://newsapi.org/v2/top-headlines?country=us&domains=techcrunch.com&from=2024-09-19&to=2024-09-21&apiKey=' . $apiKey;
-
+            
             $response = Http::get($url);
             $newsData = $response->json();
-
+            
             if ($response->successful() && isset($newsData['articles'])) {
                 foreach ($newsData['articles'] as $article) {
                     // Convert the 'publishedAt' date to MySQL format
@@ -33,7 +33,7 @@ class NewsController extends Controller
                     News::updateOrCreate(
                         ['title' => $article['title']], // Unique constraint
                         [
-                            'description' => $article['description'],
+                            'description' => $article['description']??"",
                             'url' => $article['url'],
                             'source' => $article['source']['name'],
                             'published_at' => $publishedAt, // Save in MySQL format

@@ -129,4 +129,81 @@ class ArticleControllerTest extends TestCase
         ]);
     }
 
+    /**
+     * Test that an authenticated user can search for articles based on various filters.
+     *
+     * This test verifies that an authenticated user can use the search functionality
+     * to filter articles by keyword, category, source, and date. It ensures that the
+     * search endpoint correctly returns articles that match the provided criteria and 
+     * that the response contains the expected results.
+     *
+     * Steps:
+     * 1. Create sample articles with different attributes for testing.
+     * 2. Log in to obtain an authentication token.
+     * 3. Test searching by keyword to ensure the correct articles are returned.
+     * 4. Test searching by category to verify articles are filtered by category.
+     * 5. Test searching by source to confirm articles are filtered by source.
+     * 6. Test searching by date to check that articles are filtered by publication date.
+     * 7. Assert that the response status is 200 OK and that the correct articles are present in the response.
+     *
+     * @return void
+     */
+
+    public function test_authenticated_user_can_search_articles()
+    {
+        // Create sample articles
+        $article1 = News::factory()->create([
+            'title' => 'Tech Innovations',
+            'description' => 'Latest tech trends',
+            'category' => 'Technology',
+            'source' => 'Tech Source',
+            'published_at' => '2024-09-21',
+        ]);
+
+        $article2 = News::factory()->create([
+            'title' => 'Health Tips',
+            'description' => 'Health and wellness tips',
+            'category' => 'Health',
+            'source' => 'Health Source',
+            'published_at' => '2024-09-20',
+        ]);
+
+        // Log in and get the token
+        $response = $this->postJson('/api/login', [
+            'email' => $this->user->email,
+            'password' => 'password',
+        ]);
+
+        $token = $response->json('access_token');
+
+        // Search by keyword
+        $response = $this->withToken($token)
+                        ->getJson('/api/articles/search?keyword=Health');
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['title' => 'Health Tips']);
+
+        // Search by category
+        $response = $this->withToken($token)
+                        ->getJson('/api/articles/search?category=Technology');
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['title' => 'Tech Innovations']);
+
+        // Search by source
+        $response = $this->withToken($token)
+                        ->getJson('/api/articles/search?source=Tech Source');
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['title' => 'Tech Innovations']);
+
+        // Search by date
+        $response = $this->withToken($token)
+                        ->getJson('/api/articles/search?date=2024-09-21');
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['title' => 'Tech Innovations']);
+    }
+
+
 }

@@ -17,6 +17,15 @@
             <directory>app</directory>
         </include>
     </source>
+        <php>
+        <ini name="error_reporting" value="-1" />
+    </php>
+    <php>
+        <ini name="display_errors" value="1" />
+        <ini name="display_startup_errors" value="1" />
+        <ini name="log_errors" value="1" />
+        <ini name="error_log" value="php://stderr" />
+    </php>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_CONNECTION" value="sqlite"/>
