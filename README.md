@@ -82,6 +82,36 @@ To ensure that the application can fetch news from the APIs, you need to set up 
 
 By setting these environment variables, the application will be able to use the API keys for fetching and updating news data.
 
+## Testing
+
+For running tests, you should configure a separate environment. Laravel uses the `.env.testing` file for this purpose.
+
+### Steps to Set Up Testing Environment
+
+1. **Create `.env.testing` File:**
+   - Copy your `.env` file to a new file named `.env.testing`:
+
+     ```bash
+     cp .env .env.testing
+     ```
+
+2. **Update `.env.testing`:**
+   - Open the `.env.testing` file and set the `APP_ENV` to `testing` and configure any testing-specific settings if needed:
+
+     ```plaintext
+     APP_ENV=testing
+     DB_CONNECTION=sqlite
+     DB_DATABASE=:memory:
+     ```
+
+     Adjust the database settings as required for testing. The example above uses an in-memory SQLite database for faster tests.
+
+3. **Run Tests:**
+   - You can run your tests using PHPUnit:
+
+     ```bash
+     php artisan test
+     ```
 
 # Contributing
 
