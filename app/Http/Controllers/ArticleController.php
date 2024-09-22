@@ -60,4 +60,28 @@ class ArticleController extends Controller
 
         return response()->json($articles);
     }
+
+    /**
+     * Retrieve a single article by its ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id)
+    {
+        // Fetch the article by ID
+        $article = News::find($id);
+
+        // If article not found, return a 404 error
+        if (!$article) {
+            return response()->json([
+                'message' => 'Article not found',
+            ], 404);
+        }
+
+        // Return the article details in the response
+        return response()->json([
+            'data' => $article,
+        ], 200);
+    }
 }

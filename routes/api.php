@@ -25,4 +25,5 @@ Route::get('fetch-nyt-news', [NewsController::class, 'fetchNewsFromNYT']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/articles', [ArticleController::class, 'getPaginatedArticles']);
     Route::get('/articles/search', [ArticleController::class, 'search']);
+    Route::get('/articles/{id}', [ArticleController::class, 'show']);
 }); 

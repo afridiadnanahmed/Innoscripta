@@ -3,8 +3,10 @@ namespace Tests\Feature;
 
 use App\Models\News;
 use App\Models\User; // Ensure User model is imported
+use Database\Factories\NewsFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ArticleControllerTest extends TestCase
@@ -205,5 +207,77 @@ class ArticleControllerTest extends TestCase
                 ->assertJsonFragment(['title' => 'Tech Innovations']);
     }
 
+    /**
+     * Test retrieving a single article by ID.
+     *
+     * @return void
+     */
+    public function test_can_retrieve_single_article()
+    {
+        // Arrange: Create a user and authenticate using Sanctum
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+    
+        // Create a news article
+        $article = News::factory()->create([
+            'title' => 'Test Article',
+            'description' => 'Test article description',
+            'url' => 'https://example.com/test-article',
+            'source' => 'Example Source',
+            'category' => 'Technology',
+            'published_at' => now(),
+        ]);
+    
+        // Act: Make a GET request to the article endpoint
+        $response = $this->getJson("/api/articles/{$article->id}");
+        // dd($response->getContent());
+        // Assert: Check if the response is OK and the article details are returned correctly
+        $response->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => $article->id,
+                    'title' => 'Test Article',
+                    'description' => 'Test article description',
+                    'url' => 'https://example.com/test-article',
+                    'source' => 'Example Source',
+                    'category' => 'Technology',
+                ]
+            ]);
+
+            $response->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'title',
+                    'description',
+                    'url',
+                    'source',
+                    'category',
+                    'published_at',
+                    'created_at',
+                    'updated_at'
+                ]
+            ]);
+    }
+
+    /**
+     * Test retrieving a non-existent article.
+     *
+     * @return void
+     */
+    public function test_retrieve_non_existent_article_returns_404()
+    {
+        // Arrange: Create a user and authenticate using Sanctum
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        // Act: Make a GET request to a non-existent article
+        $response = $this->getJson('/api/articles/999'); // Assuming this article ID does not exist
+
+        // Assert: The response should return a 404 status code
+        $response->assertStatus(404)
+             ->assertJson([
+                 'message' => 'Article not found',
+             ]);
+    }
 
 }
