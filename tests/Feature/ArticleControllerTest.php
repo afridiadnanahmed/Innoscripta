@@ -3,8 +3,10 @@ namespace Tests\Feature;
 
 use App\Models\News;
 use App\Models\User; // Ensure User model is imported
+use Database\Factories\NewsFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ArticleControllerTest extends TestCase
@@ -127,6 +129,155 @@ class ArticleControllerTest extends TestCase
             'email' => 'user@example.com',
             'password' => bcrypt('password'), // Ensure the password is hashed
         ]);
+    }
+
+    /**
+     * Test that an authenticated user can search for articles based on various filters.
+     *
+     * This test verifies that an authenticated user can use the search functionality
+     * to filter articles by keyword, category, source, and date. It ensures that the
+     * search endpoint correctly returns articles that match the provided criteria and 
+     * that the response contains the expected results.
+     *
+     * Steps:
+     * 1. Create sample articles with different attributes for testing.
+     * 2. Log in to obtain an authentication token.
+     * 3. Test searching by keyword to ensure the correct articles are returned.
+     * 4. Test searching by category to verify articles are filtered by category.
+     * 5. Test searching by source to confirm articles are filtered by source.
+     * 6. Test searching by date to check that articles are filtered by publication date.
+     * 7. Assert that the response status is 200 OK and that the correct articles are present in the response.
+     *
+     * @return void
+     */
+
+    public function test_authenticated_user_can_search_articles()
+    {
+        // Create sample articles
+        $article1 = News::factory()->create([
+            'title' => 'Tech Innovations',
+            'description' => 'Latest tech trends',
+            'category' => 'Technology',
+            'source' => 'Tech Source',
+            'published_at' => '2024-09-21',
+        ]);
+
+        $article2 = News::factory()->create([
+            'title' => 'Health Tips',
+            'description' => 'Health and wellness tips',
+            'category' => 'Health',
+            'source' => 'Health Source',
+            'published_at' => '2024-09-20',
+        ]);
+
+        // Log in and get the token
+        $response = $this->postJson('/api/login', [
+            'email' => $this->user->email,
+            'password' => 'password',
+        ]);
+
+        $token = $response->json('access_token');
+
+        // Search by keyword
+        $response = $this->withToken($token)
+                        ->getJson('/api/articles/search?keyword=Health');
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['title' => 'Health Tips']);
+
+        // Search by category
+        $response = $this->withToken($token)
+                        ->getJson('/api/articles/search?category=Technology');
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['title' => 'Tech Innovations']);
+
+        // Search by source
+        $response = $this->withToken($token)
+                        ->getJson('/api/articles/search?source=Tech Source');
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['title' => 'Tech Innovations']);
+
+        // Search by date
+        $response = $this->withToken($token)
+                        ->getJson('/api/articles/search?date=2024-09-21');
+
+        $response->assertStatus(200)
+                ->assertJsonFragment(['title' => 'Tech Innovations']);
+    }
+
+    /**
+     * Test retrieving a single article by ID.
+     *
+     * @return void
+     */
+    public function test_can_retrieve_single_article()
+    {
+        // Arrange: Create a user and authenticate using Sanctum
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+    
+        // Create a news article
+        $article = News::factory()->create([
+            'title' => 'Test Article',
+            'description' => 'Test article description',
+            'url' => 'https://example.com/test-article',
+            'source' => 'Example Source',
+            'category' => 'Technology',
+            'published_at' => now(),
+        ]);
+    
+        // Act: Make a GET request to the article endpoint
+        $response = $this->getJson("/api/articles/{$article->id}");
+        // dd($response->getContent());
+        // Assert: Check if the response is OK and the article details are returned correctly
+        $response->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => $article->id,
+                    'title' => 'Test Article',
+                    'description' => 'Test article description',
+                    'url' => 'https://example.com/test-article',
+                    'source' => 'Example Source',
+                    'category' => 'Technology',
+                ]
+            ]);
+
+            $response->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'title',
+                    'description',
+                    'url',
+                    'source',
+                    'category',
+                    'published_at',
+                    'created_at',
+                    'updated_at'
+                ]
+            ]);
+    }
+
+    /**
+     * Test retrieving a non-existent article.
+     *
+     * @return void
+     */
+    public function test_retrieve_non_existent_article_returns_404()
+    {
+        // Arrange: Create a user and authenticate using Sanctum
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        // Act: Make a GET request to a non-existent article
+        $response = $this->getJson('/api/articles/999'); // Assuming this article ID does not exist
+
+        // Assert: The response should return a 404 status code
+        $response->assertStatus(404)
+             ->assertJson([
+                 'message' => 'Article not found',
+             ]);
     }
 
 }

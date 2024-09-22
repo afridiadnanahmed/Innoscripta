@@ -23,4 +23,65 @@ class ArticleController extends Controller
 
         return response()->json($news);
     }
+
+    /**
+     * Fetch articles with optional filters for keyword, date, category, and source.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
+    {
+        $query = News::query();
+
+        // Filter by keyword
+        if ($request->filled('keyword')) {
+            $query->where('title', 'like', '%' . $request->input('keyword') . '%')
+                  ->orWhere('description', 'like', '%' . $request->input('keyword') . '%');
+        }
+
+        // Filter by date
+        if ($request->filled('date')) {
+            $query->whereDate('published_at', $request->input('date'));
+        }
+
+        // Filter by category
+        if ($request->filled('category')) {
+            $query->where('category', $request->input('category'));
+        }
+
+        // Filter by source
+        if ($request->filled('source')) {
+            $query->where('source', $request->input('source'));
+        }
+
+        // Paginate results
+        $articles = $query->paginate($request->input('per_page', 10));
+
+        return response()->json($articles);
+    }
+
+    /**
+     * Retrieve a single article by its ID.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($id)
+    {
+        // Fetch the article by ID
+        $article = News::find($id);
+
+        // If article not found, return a 404 error
+        if (!$article) {
+            return response()->json([
+                'message' => 'Article not found',
+            ], 404);
+        }
+
+        // Return the article details in the response
+        return response()->json([
+            'data' => $article,
+        ], 200);
+    }
 }

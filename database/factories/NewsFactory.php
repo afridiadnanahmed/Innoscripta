@@ -17,6 +17,7 @@ class NewsFactory extends Factory
             'url' => $this->faker->url,
             'source' => $this->faker->word,
             'published_at' => $this->faker->dateTimeThisYear,
+            'category' => $this->faker->randomElement(['Technology', 'Health', 'Sports', 'Business', 'Entertainment']),  // New category field
         ];
     }
 }
