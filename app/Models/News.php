@@ -17,4 +17,11 @@ class News extends Model
         'source',
         'published_at',
     ];
+
+        /**
+     * The attributes that should be cast to dates.
+     *
+     * @var array
+     */
+    protected $dates = ['published_at'];
 }
